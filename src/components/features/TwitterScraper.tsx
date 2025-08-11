@@ -225,73 +225,76 @@ export default function TwitterScraper() {
         </div>
       )}
 
-      {/* Political Compass Image */}
+      {/* Political Compass and Analysis Results Side by Side */}
       {analysis && (
-        <div className="mb-6 flex justify-center">
-          <div className="relative inline-block">
-            <img 
-              src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
-              alt="Political Compass Chart"
-              className="max-w-full h-auto rounded-lg shadow-lg"
-            />
-            {tweets[0]?.user.profile_image_url && (
-              <img 
-                src={tweets[0].user.profile_image_url} 
-                alt={`${tweets[0].user.display_name}'s position`}
-                className="absolute w-12 h-12 rounded-full object-cover border-4 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  left: `${50 + (analysis.left_right_score * 4)}%`,
-                  top: `${50 - (analysis.authoritarian_libertarian_score * 4)}%`
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
+        <div className="mb-6 relative left-1/2 transform -translate-x-1/2 w-screen max-w-none px-6">
+          <div className="flex flex-col lg:flex-row gap-8 justify-center max-w-7xl mx-auto lg:items-center">
+            {/* Political Compass Image */}
+            <div className="flex justify-center lg:justify-start flex-shrink-0 lg:self-center">
+              <div className="relative inline-block">
+                <img 
+                  src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
+                  alt="Political Compass Chart"
+                  className="max-w-md w-full h-auto rounded-lg shadow-lg"
+                />
+                {tweets[0]?.user.profile_image_url && (
+                  <img 
+                    src={tweets[0].user.profile_image_url} 
+                    alt={`${tweets[0].user.display_name}'s position`}
+                    className="absolute w-12 h-12 rounded-full object-cover border-4 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2"
+                    style={{
+                      left: `${50 + (analysis.left_right_score * 4)}%`,
+                      top: `${50 - (analysis.authoritarian_libertarian_score * 4)}%`
+                    }}
+                  />
+                )}
+              </div>
+            </div>
 
-      {/* Political Analysis Results */}
-      {analysis && (
-        <div className="bg-black border border-gray-200 rounded-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4 font-mono">Political Analysis Results</h2>
-          
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-black border border-gray-200 p-4 rounded">
-              <h3 className="font-semibold text-gray-200">Authoritarian ↔ Libertarian</h3>
-              <div className="text-2xl font-bold">
-                {analysis.authoritarian_libertarian_score > 0 ? '+' : ''}{analysis.authoritarian_libertarian_score}
+            {/* Political Analysis Results */}
+            <div className="bg-black border border-gray-200 rounded-lg p-6 w-full lg:w-[28rem] xl:w-[36rem]">
+              <h2 className="text-2xl font-bold mb-4 font-mono">Political Analysis Results</h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="bg-black border border-gray-200 p-4 rounded">
+                  <h3 className="font-semibold text-gray-200">Authoritarian ↔ Libertarian</h3>
+                  <div className="text-2xl font-bold">
+                    {analysis.authoritarian_libertarian_score > 0 ? '+' : ''}{analysis.authoritarian_libertarian_score}
+                  </div>
+                  <div className="text-sm text-gray-200">
+                    {analysis.authoritarian_libertarian_score > 0 ? 'Authoritarian' : 'Libertarian'} leaning
+                  </div>
+                </div>
+                
+                <div className="bg-black border border-gray-200 p-4 rounded">
+                  <h3 className="font-semibold text-gray-200">Left ↔ Right</h3>
+                  <div className="text-2xl font-bold">
+                    {analysis.left_right_score > 0 ? '+' : ''}{analysis.left_right_score}
+                  </div>
+                  <div className="text-sm text-gray-200">
+                    {analysis.left_right_score > 0 ? 'Right' : 'Left'} leaning
+                  </div>
+                </div>
               </div>
-              <div className="text-sm text-gray-200">
-                {analysis.authoritarian_libertarian_score > 0 ? 'Authoritarian' : 'Libertarian'} leaning
+              
+              <div className="bg-black border border-gray-200 p-4 rounded mb-4">
+                <h3 className="font-semibold text-gray-200 mb-2">Political Label</h3>
+                <div className="text-xl font-bold text-gray-200">{analysis.political_label}</div>
               </div>
-            </div>
-            
-            <div className="bg-black border border-gray-200 p-4 rounded">
-              <h3 className="font-semibold text-gray-200">Left ↔ Right</h3>
-              <div className="text-2xl font-bold">
-                {analysis.left_right_score > 0 ? '+' : ''}{analysis.left_right_score}
-              </div>
-              <div className="text-sm text-gray-200">
-                {analysis.left_right_score > 0 ? 'Right' : 'Left'} leaning
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-black border border-gray-200 p-4 rounded mb-4">
-            <h3 className="font-semibold text-gray-200 mb-2">Political Label</h3>
-            <div className="text-xl font-bold text-gray-200">{analysis.political_label}</div>
-          </div>
-          
-          <div className="bg-black border border-gray-200 p-4 rounded">
-            <h3 className="font-semibold text-gray-200 mb-2">Confidence</h3>
-            <div className="flex items-center">
-              <div className="text-lg font-bold mr-2">
-                {Math.round(analysis.confidence_score * 100)}%
-              </div>
-              <div className="flex-1 bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-green-500 h-2 rounded-full" 
-                  style={{ width: `${analysis.confidence_score * 100}%` }}
-                ></div>
+              
+              <div className="bg-black border border-gray-200 p-4 rounded">
+                <h3 className="font-semibold text-gray-200 mb-2">Confidence</h3>
+                <div className="flex items-center">
+                  <div className="text-lg font-bold mr-2">
+                    {Math.round(analysis.confidence_score * 100)}%
+                  </div>
+                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full" 
+                      style={{ width: `${analysis.confidence_score * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
