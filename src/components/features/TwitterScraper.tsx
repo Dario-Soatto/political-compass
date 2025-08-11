@@ -155,7 +155,14 @@ export default function TwitterScraper() {
               <input
                 type="checkbox"
                 checked={useMockData}
-                onChange={(e) => setUseMockData(e.target.checked)}
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  setUseMockData(isChecked);
+                  // Auto-fill username when enabling mock data
+                  if (isChecked) {
+                    setUsername('dsoatto');
+                  }
+                }}
                 className="mr-2"
               />
               Use mock data (for testing without API limits)
@@ -191,15 +198,16 @@ export default function TwitterScraper() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="@dsoatto or dsoatto"
+              placeholder="@elonmusk or elonmusk"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              readOnly={useMockData}
             />
           </div>
           
           <div>
             <label htmlFor="limit" className="block text-sm font-medium mb-2">
-              Number of Tweets (max 50)
+              Number of Tweets to analyze (max 50)
             </label>
             <input
               type="number"
