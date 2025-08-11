@@ -48,7 +48,8 @@ Analyze the following tweets and determine the author's political leanings on tw
    - Positive scores = Right (conservative, free-market, traditional values)
 
 Also provide:
-- A political label that best fits. For the political label, be highly specific and nuanced. Instead of generic terms like "Liberal" or "Conservative", use detailed ideological descriptors that capture the person's specific blend of beliefs. Consider these examples:
+- A political label that best fits and is highly specific and nuanced.
+For the political label, be highly specific and nuanced. Instead of generic terms like "Liberal" or "Conservative", use detailed ideological descriptors that capture the person's specific blend of beliefs. Consider these examples:
 
 - "Techno-Optimist Libertarian" (pro-tech, anti-regulation)
 - "Post-Keynesian Social Democrat" (economic left, moderate authority)
@@ -72,18 +73,17 @@ Also provide:
 - "Neo-Feudalist" (hierarchical capitalism)
 
 Create a label that captures the specific intellectual tradition, policy preferences, and ideological nuances evident in the tweets. Be creative and precise rather than generic.
+
 - A confidence score (0-1) for how certain you are about this analysis
 
 Tweets to analyze:
 ${tweetTexts}
 
-Respond with ONLY a JSON object in this exact format:
-{
-  "authoritarian_libertarian_score": -3,
-  "left_right_score": 2,
-  "political_label": "Conservative Libertarian",
-  "confidence_score": 0.75
-}`;
+Respond with ONLY a JSON object with these fields:
+- authoritarian_libertarian_score: number between -10 and 10
+- left_right_score: number between -10 and 10  
+- political_label: string with specific ideological descriptor
+- confidence_score: number between 0 and 1`;
 
   try {
     console.log('Sending request to Gemini...');
