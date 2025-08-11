@@ -48,7 +48,30 @@ Analyze the following tweets and determine the author's political leanings on tw
    - Positive scores = Right (conservative, free-market, traditional values)
 
 Also provide:
-- A political label that best fits (e.g., "Liberal", "Conservative", "Libertarian", "Progressive", "Authoritarian Left", etc.)
+- A political label that best fits. For the political label, be highly specific and nuanced. Instead of generic terms like "Liberal" or "Conservative", use detailed ideological descriptors that capture the person's specific blend of beliefs. Consider these examples:
+
+- "Techno-Optimist Libertarian" (pro-tech, anti-regulation)
+- "Post-Keynesian Social Democrat" (economic left, moderate authority)
+- "Paleo-Conservative Nationalist" (traditional right, authoritarian)
+- "Bleeding Heart Libertarian" (socially liberal, economically right)
+- "Democratic Socialist with Authoritarian Tendencies"
+- "Neo-Reactionary Accelerationist" (far-right futurist)
+- "Anarcho-Syndicalist" (far-left, anti-authority)
+- "Third Way Neoliberal" (centrist with market emphasis)
+- "Christian Democratic Corporatist" (center-right, community-focused)
+- "Green Social Liberal" (environmentalist, moderate left)
+- "Populist Nationalist" (anti-elite, pro-sovereignty)
+- "Effective Altruist Utilitarian" (evidence-based, outcome-focused)
+- "Post-Liberal Communitarian" (beyond left-right, community-focused)
+- "Georgist Single-Taxer" (land value tax advocate)
+- "Austrian School Minarchist" (minimal state, free market)
+- "Distributist" (third way between capitalism and socialism)
+- "Market Socialist" (worker ownership, market mechanisms)
+- "Eco-Fascist" (environmental authoritarianism)
+- "Mutualist" (market anarchism)
+- "Neo-Feudalist" (hierarchical capitalism)
+
+Create a label that captures the specific intellectual tradition, policy preferences, and ideological nuances evident in the tweets. Be creative and precise rather than generic.
 - A confidence score (0-1) for how certain you are about this analysis
 
 Tweets to analyze:

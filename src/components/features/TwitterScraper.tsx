@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Tweet, ScrapeResponse, PoliticalAnalysis, AnalysisResponse } from '@/types/twitter';
-import { mockTweetData, mockConservativeData, mockLiberalData } from '@/mockData';
+import { mockDarioData, mockElonData, mockSamaData, mockTrumpData, mockAocData } from '@/mockData';
 
 export default function TwitterScraper() {
   const [username, setUsername] = useState('');
@@ -13,16 +13,49 @@ export default function TwitterScraper() {
   const [analysis, setAnalysis] = useState<PoliticalAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useMockData, setUseMockData] = useState(true); // Toggle for mock data
-  const [mockDataType, setMockDataType] = useState<'mixed' | 'conservative' | 'liberal'>('mixed');
+  const [mockDataType, setMockDataType] = useState< 'dario' | 'elon' | 'sama' | 'trump' | 'aoc'>('dario');
 
   const getMockData = (): ScrapeResponse => {
     switch (mockDataType) {
-      case 'conservative':
-        return mockConservativeData;
-      case 'liberal':
-        return mockLiberalData;
+      case 'dario':
+        return mockDarioData;
+      case 'elon':
+        return mockElonData;
+      case 'sama':
+        return mockSamaData;
+      case 'trump':
+        return mockTrumpData;
+      case 'aoc':
+        return mockAocData;
       default:
-        return mockTweetData;
+        return mockDarioData;
+    }
+  };
+
+  // Add this new function to handle mock data type changes
+  const handleMockDataTypeChange = (newType: 'dario' | 'elon' | 'sama' | 'trump' | 'aoc') => {
+    setMockDataType(newType);
+    
+    // Auto-fill username based on selected mock data type
+    switch (newType) {
+      case 'elon':
+        setUsername('elonmusk');
+        break;
+      case 'dario':
+        setUsername('dsoatto');
+        break;
+      case 'sama':
+        setUsername('sama');
+        break;
+      case 'trump':
+        setUsername('realdonaldtrump');
+        break;
+      case 'aoc':
+        setUsername('aoc');
+        break;
+      default:
+        // Don't auto-fill for generic mock data types
+        break;
     }
   };
 
@@ -131,12 +164,15 @@ export default function TwitterScraper() {
               <label className="block text-sm font-medium mb-2">Mock Data Type:</label>
               <select
                 value={mockDataType}
-                onChange={(e) => setMockDataType(e.target.value as 'mixed' | 'conservative' | 'liberal')}
+                onChange={(e) => handleMockDataTypeChange(e.target.value as 'dario' | 'elon')}
                 className="px-3 py-1 border border-gray-300 rounded-md"
               >
-                <option value="mixed">Mixed Political Views</option>
-                <option value="conservative">Conservative Views</option>
-                <option value="liberal">Liberal Views</option>
+                
+                <option value="dario">Dario Soatto's Views</option>
+                <option value="elon">Elon Musk's Views</option>
+                <option value="sama">Sam Altman's Views</option>
+                <option value="trump">Donald Trump's Views</option>
+                <option value="aoc">Alexandria Ocasio-Cortez's Views</option>
               </select>
             </div>
           )}
