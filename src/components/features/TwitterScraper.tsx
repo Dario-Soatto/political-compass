@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tweet, ScrapeResponse, PoliticalAnalysis, AnalysisResponse } from '@/types/twitter';
 import { mockDarioData, mockElonData, mockSamaData, mockTrumpData, mockAocData } from '@/mockData';
 
@@ -14,6 +14,23 @@ export default function TwitterScraper() {
   const [error, setError] = useState<string | null>(null);
   const [useMockData, setUseMockData] = useState(false); // Toggle for mock data
   const [mockDataType, setMockDataType] = useState< 'dario' | 'elon' | 'sama' | 'trump' | 'aoc'>('dario');
+  const [generatingImage, setGeneratingImage] = useState(false);
+
+  // Read username from URL parameters on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUsername = urlParams.get('username');
+    if (urlUsername) {
+      setUsername(urlUsername);
+      // Automatically trigger analysis after setting the username
+      setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) {
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        }
+      }, 100); // Small delay to ensure state is updated
+    }
+  }, []);
 
   const getMockData = (): ScrapeResponse => {
     switch (mockDataType) {
@@ -141,6 +158,257 @@ export default function TwitterScraper() {
     }
   };
 
+  const generateImage = async () => {
+    if (!analysis || !tweets[0]) return;
+    
+    setGeneratingImage(true);
+    
+    try {
+      // Create canvas with dimensions matching the side-by-side layout
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      const pixelRatio = window.devicePixelRatio || 1;
+      const width = 1400; // Wide enough for side-by-side layout
+      const height = 600;  // Height to accommodate both sections
+      
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      
+      ctx.scale(pixelRatio, pixelRatio);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
+      // Fill with dark background matching the page
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Load and draw the political compass
+      const compassImg = new Image();
+      compassImg.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        compassImg.onload = resolve;
+        compassImg.onerror = reject;
+        compassImg.src = 'https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png';
+      });
+      
+      // Position compass on the left side (matching the page layout)
+      const compassSize = 500;
+      const compassX = 80;
+      const compassY = (height - compassSize) / 2;
+      
+      // Draw compass with rounded corners to match page styling
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(compassX, compassY, compassSize, compassSize, 8);
+      ctx.clip();
+      ctx.drawImage(compassImg, compassX, compassY, compassSize, compassSize);
+      ctx.restore();
+      
+      // Draw user position on compass
+      if (tweets[0]?.user.profile_image_url) {
+        try {
+          const userImg = new Image();
+          userImg.crossOrigin = 'anonymous';
+          
+          await new Promise((resolve, reject) => {
+            userImg.onload = resolve;
+            userImg.onerror = reject;
+            userImg.src = tweets[0].user.profile_image_url!;
+          });
+          
+          const userSize = 48;
+          const userX = compassX + (compassSize * (50 + analysis.left_right_score * 4) / 100) - userSize / 2;
+          const userY = compassY + (compassSize * (50 - analysis.authoritarian_libertarian_score * 4) / 100) - userSize / 2;
+          
+          // Draw circular user image
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(userX + userSize / 2, userY + userSize / 2, userSize / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(userImg, userX, userY, userSize, userSize);
+          ctx.restore();
+          
+          // Draw white border around user image
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(userX + userSize / 2, userY + userSize / 2, userSize / 2, 0, Math.PI * 2);
+          ctx.stroke();
+        } catch (error) {
+          console.log('Could not load user profile image');
+        }
+      }
+      
+      // Calculate the actual content height needed for the analysis box
+      const titleHeight = 50;
+      const scoresHeight = 100;
+      const labelBoxHeight = 70;
+      const confidenceBoxHeight = 70;
+      const padding = 30;
+      const spacing = 20;
+      
+      const actualBoxHeight = padding + titleHeight + spacing + scoresHeight + spacing + labelBoxHeight + spacing + confidenceBoxHeight + padding;
+      
+      // Draw the analysis results box on the right side with calculated height
+      const boxX = compassX + compassSize + 60;
+      const boxY = compassY + (compassSize - actualBoxHeight) / 2; // Center it vertically with compass
+      const boxWidth = width - boxX - 60;
+      
+      // Draw the dark box with border (matching page styling)
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#d1d5db';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(boxX, boxY, boxWidth, actualBoxHeight, 8);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Set text properties
+      ctx.fillStyle = '#ededed';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      
+      let textY = boxY + padding;
+      const textX = boxX + 30;
+      const contentWidth = boxWidth - 60;
+      
+      // Title
+      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Political Analysis Results', textX, textY);
+      textY += titleHeight + spacing;
+      
+      // Two-column layout for scores
+      const colWidth = (contentWidth - 20) / 2;
+      
+      // Authoritarian ↔ Libertarian box
+      const leftBoxX = textX;
+      const leftBoxY = textY;
+      
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#d1d5db';
+      ctx.beginPath();
+      ctx.roundRect(leftBoxX, leftBoxY, colWidth, scoresHeight, 4);
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '600 16px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Authoritarian ↔ Libertarian', leftBoxX + 15, leftBoxY + 15);
+      
+      ctx.fillStyle = '#ededed';
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
+      const authScore = analysis.authoritarian_libertarian_score > 0 ? '+' : '';
+      ctx.fillText(`${authScore}${analysis.authoritarian_libertarian_score}`, leftBoxX + 15, leftBoxY + 40);
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '14px system-ui, -apple-system, sans-serif';
+      const authLabel = analysis.authoritarian_libertarian_score > 0 ? 'Authoritarian' : 'Libertarian';
+      ctx.fillText(`${authLabel} leaning`, leftBoxX + 15, leftBoxY + 70);
+      
+      // Left ↔ Right box
+      const rightBoxX = textX + colWidth + 20;
+      const rightBoxY = textY;
+      
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#d1d5db';
+      ctx.beginPath();
+      ctx.roundRect(rightBoxX, rightBoxY, colWidth, scoresHeight, 4);
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '600 16px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Left ↔ Right', rightBoxX + 15, rightBoxY + 15);
+      
+      ctx.fillStyle = '#ededed';
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
+      const leftRightScore = analysis.left_right_score > 0 ? '+' : '';
+      ctx.fillText(`${leftRightScore}${analysis.left_right_score}`, rightBoxX + 15, rightBoxY + 40);
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '14px system-ui, -apple-system, sans-serif';
+      const lrLabel = analysis.left_right_score > 0 ? 'Right' : 'Left';
+      ctx.fillText(`${lrLabel} leaning`, rightBoxX + 15, rightBoxY + 70);
+      
+      textY += scoresHeight + spacing;
+      
+      // Political Label box
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#d1d5db';
+      ctx.beginPath();
+      ctx.roundRect(textX, textY, contentWidth, labelBoxHeight, 4);
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '600 16px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Political Label', textX + 15, textY + 15);
+      
+      ctx.fillStyle = '#ededed';
+      ctx.font = 'bold 20px system-ui, -apple-system, sans-serif';
+      ctx.fillText(analysis.political_label, textX + 15, textY + 40);
+      
+      textY += labelBoxHeight + spacing;
+      
+      // Confidence box
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#d1d5db';
+      ctx.beginPath();
+      ctx.roundRect(textX, textY, contentWidth, confidenceBoxHeight, 4);
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '600 16px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Confidence', textX + 15, textY + 15);
+      
+      ctx.fillStyle = '#ededed';
+      ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
+      ctx.fillText(`${Math.round(analysis.confidence_score * 100)}%`, textX + 15, textY + 35);
+      
+      // Confidence bar
+      const barX = textX + 80;
+      const barY = textY + 40;
+      const barWidth = contentWidth - 110;
+      const barHeight = 8;
+      
+      // Background bar
+      ctx.fillStyle = '#d1d5db';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barWidth, barHeight, 4);
+      ctx.fill();
+      
+      // Progress bar
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barWidth * analysis.confidence_score, barHeight, 4);
+      ctx.fill();
+      
+      // Download the image
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `political-compass-${tweets[0].user.username}.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png', 1.0);
+      
+    } catch (error) {
+      console.error('Error generating image:', error);
+      setError('Failed to generate image. Please try again.');
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
   return (
     <div>
       {/* Main content with constrained width */}
@@ -223,7 +491,7 @@ export default function TwitterScraper() {
           <button
             type="submit"
             disabled={loading || analyzing}
-            className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded"
+            className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
             {loading ? 'Scraping Tweets...' : analyzing ? 'Analyzing Politics...' : 'Analyze Political Leaning'}
           </button>
@@ -309,6 +577,38 @@ export default function TwitterScraper() {
                   </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Action Buttons - moved below the compass/analysis */}
+            <div className="flex justify-center gap-4 mt-8">
+              <button
+                onClick={generateImage}
+                disabled={generatingImage}
+                className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 disabled:bg-green-400 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2"
+              >
+                {generatingImage ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Generating Image...
+                  </>
+                ) : (
+                  <>
+                    Generate Image
+                  </>
+                )}
+              </button>
+              
+              <button
+                onClick={() => {
+                  const tweetText = `Check out my political compass results!`;
+                  const url = `${window.location.origin}${window.location.pathname}?username=${encodeURIComponent(tweets[0].user.username)}`;
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`;
+                  window.open(twitterUrl, '_blank');
+                }}
+                className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2"
+              >
+                Share on X
+              </button>
             </div>
           </div>
         </div>
