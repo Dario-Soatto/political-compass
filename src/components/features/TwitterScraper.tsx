@@ -168,11 +168,11 @@ export default function TwitterScraper() {
                 className="px-3 py-1 border border-gray-300 rounded-md"
               >
                 
-                <option value="dario">Dario Soatto's Views</option>
-                <option value="elon">Elon Musk's Views</option>
-                <option value="sama">Sam Altman's Views</option>
-                <option value="trump">Donald Trump's Views</option>
-                <option value="aoc">Alexandria Ocasio-Cortez's Views</option>
+                <option value="dario">Dario Soatto&apos;s Views</option>
+                <option value="elon">Elon Musk&apos;s Views</option>
+                <option value="sama">Sam Altman&apos;s Views</option>
+                <option value="trump">Donald Trump&apos;s Views</option>
+                <option value="aoc">Alexandria Ocasio-Cortez&apos;s Views</option>
               </select>
             </div>
           )}
