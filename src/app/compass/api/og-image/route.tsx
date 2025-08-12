@@ -7,89 +7,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const username = searchParams.get('username');
 
-    // If no username, generate a default preview image
     if (!username) {
-      return new ImageResponse(
-        (
-          <div style={{ 
-            width: '100%', 
-            height: '100%', 
-            display: 'flex',
-            backgroundColor: '#0a0a0a', 
-            color: '#ffffff',
-            fontFamily: 'system-ui',
-            padding: '40px'
-          }}>
-            <div style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              backgroundColor: '#000000'
-            }}>
-              {/* Left side - Political Compass */}
-              <div style={{ 
-                width: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                padding: '40px'
-              }}>
-                <img 
-                  src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
-                  width="450"
-                  height="450"
-                  style={{
-                    borderRadius: '8px',
-                    imageRendering: 'crisp-edges'
-                  }}
-                />
-              </div>
-
-              {/* Right side - Default Text */}
-              <div style={{ 
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                padding: '40px'
-              }}>
-                <div style={{
-                  fontSize: '48px',
-                  fontWeight: 'bold',
-                  marginBottom: '30px',
-                  color: '#ededed'
-                }}>
-                  X Political Compass
-                </div>
-                
-                <div style={{
-                  fontSize: '24px',
-                  marginBottom: '25px',
-                  color: '#22c55e',
-                  lineHeight: '1.3'
-                }}>
-                  Find your politics based on your X activity
-                </div>
-                
-                <div style={{
-                  fontSize: '20px',
-                  color: '#d1d5db'
-                }}>
-                  Enter any X handle to get started
-                </div>
-              </div>
-            </div>
-          </div>
-        ),
-        {
-          width: 1200,
-          height: 630,
-          debug: false
-        }
-      );
+      return NextResponse.json({ error: 'Username parameter is required' }, { status: 400 });
     }
 
     console.log(`[OG Image API] Generating for username: ${username}`);
@@ -131,6 +50,15 @@ export async function GET(request: NextRequest) {
     const analysis = analysisResult.analysis;
     const tweet = scrapeResult.tweets[0];
 
+    // Updated text with Political Analysis Results header
+    const displayText = `X Analysis Results
+
+@${tweet.user.username}
+
+${analysis.political_label}
+
+Confidence: ${Math.round(analysis.confidence_score * 100)}%`;
+
     // Calculate position for profile picture (same logic as TwitterScraper.tsx)
     const compassSize = 450;
     const userSize = 40;
@@ -145,103 +73,59 @@ export async function GET(request: NextRequest) {
           display: 'flex',
           backgroundColor: '#0a0a0a', 
           color: '#ffffff',
-          fontFamily: 'system-ui',
-          padding: '40px'
+          fontFamily: 'system-ui'
         }}>
-          {/* Container with border (like TwitterScraper) */}
-          <div style={{
-            width: '100%',
-            height: '100%',
+          {/* Left side - Political Compass with Profile Picture */}
+          <div style={{ 
+            width: '50%',
             display: 'flex',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            backgroundColor: '#000000'
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative'
           }}>
-            {/* Left side - Political Compass with Profile Picture */}
-            <div style={{ 
-              width: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              padding: '40px'
-            }}>
-              {/* Compass Background */}
-              <img 
-                src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
-                width={compassSize}
-                height={compassSize}
+            {/* Compass Background */}
+            <img 
+              src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
+              width={compassSize}
+              height={compassSize}
+              style={{
+                borderRadius: '8px',
+                imageRendering: 'crisp-edges'
+              }}
+            />
+            
+            {/* Profile Picture positioned on compass */}
+            {tweet.user.profile_image_url && (
+              <img
+                src={tweet.user.profile_image_url}
+                width={userSize}
+                height={userSize}
                 style={{
-                  borderRadius: '8px',
-                  imageRendering: 'crisp-edges'
+                  position: 'absolute',
+                  left: `${userX}%`,
+                  top: `${userY}%`,
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  border: '3px solid #ffffff'
                 }}
               />
-              
-              {/* Profile Picture positioned on compass */}
-              {tweet.user.profile_image_url && (
-                <img
-                  src={tweet.user.profile_image_url}
-                  width={userSize}
-                  height={userSize}
-                  style={{
-                    position: 'absolute',
-                    left: `${userX}%`,
-                    top: `${userY}%`,
-                    transform: 'translate(-50%, -50%)',
-                    borderRadius: '50%',
-                    border: '3px solid #ffffff'
-                  }}
-                />
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Right side - Text */}
-            <div style={{ 
-              width: '50%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              padding: '40px'
-            }}>
-              {/* Large title */}
-              <div style={{
-                fontSize: '48px',
-                fontWeight: 'bold',
-                marginBottom: '30px',
-                color: '#ededed'
-              }}>
-                Political Analysis Results
-              </div>
-              
-              {/* Username */}
-              <div style={{
-                fontSize: '36px',
-                fontWeight: 'bold',
-                marginBottom: '25px',
-                color: '#ffffff'
-              }}>
-                @{tweet.user.username}
-              </div>
-              
-              {/* Political Label */}
-              <div style={{
-                fontSize: '24px',
-                fontWeight: 'bold',
-                marginBottom: '25px',
-                color: '#22c55e'
-              }}>
-                {analysis.political_label}
-              </div>
-              
-              {/* Confidence */}
-              <div style={{
-                fontSize: '20px',
-                fontWeight: 'bold',
-                color: '#d1d5db'
-              }}>
-                Confidence: {Math.round(analysis.confidence_score * 100)}%
-              </div>
-            </div>
+          {/* Right side - Text */}
+          <div style={{ 
+            width: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            fontSize: '32px',
+            textAlign: 'left',
+            padding: '40px',
+            whiteSpace: 'pre-line',
+            lineHeight: '1.4',
+            fontWeight: 'bold'
+          }}>
+            {displayText}
           </div>
         </div>
       ),
