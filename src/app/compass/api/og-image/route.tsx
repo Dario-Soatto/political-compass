@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const tweet = scrapeResult.tweets[0];
 
     // Updated text with Political Analysis Results header
-    const displayText = `Political Analysis Results
+    const displayText = `X Analysis Results
 
 @${tweet.user.username}
 

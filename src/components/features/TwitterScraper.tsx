@@ -413,7 +413,14 @@ export default function TwitterScraper() {
     <div>
       {/* Main content with constrained width */}
       <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-8 font-mono">Twitter Political Compass</h1>
+        <h1 className="text-3xl font-bold mb-8 font-mono flex items-center gap-3">
+          <img 
+            src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/x-social-media-white-icon.png"
+            alt="X (Twitter) Logo"
+            className="w-8 h-8 object-contain"
+          />
+          Political Compass
+        </h1>
         
         {/* Mock Data Toggle
         <div className="mb-6 p-4 bg-black border border-gray-200 rounded-lg">
@@ -459,7 +466,7 @@ export default function TwitterScraper() {
         <form onSubmit={handleSubmit} className="mb-8 space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium mb-2">
-              Twitter Username
+              X Username
             </label>
             <input
               type="text"
@@ -475,7 +482,7 @@ export default function TwitterScraper() {
           
           <div>
             <label htmlFor="limit" className="block text-sm font-medium mb-2">
-              Number of Tweets to analyze (max 50)
+              Number of posts to analyze (max 50)
             </label>
             <input
               type="number"
@@ -533,7 +540,14 @@ export default function TwitterScraper() {
 
               {/* Political Analysis Results */}
               <div className="bg-black border border-gray-200 rounded-lg p-6">
-                <h2 className="text-2xl font-bold mb-4 font-mono">Political Analysis Results</h2>
+                <h2 className="text-2xl font-bold mb-4 font-mono flex items-center gap-3">
+                  <img 
+                    src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/x-social-media-white-icon.png"
+                    alt="X (Twitter) Logo"
+                    className="w-6 h-6 object-contain"
+                  />
+                  Analysis Results
+                </h2>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div className="bg-black border border-gray-200 p-4 rounded">
@@ -580,11 +594,11 @@ export default function TwitterScraper() {
             </div>
             
             {/* Action Buttons - moved below the compass/analysis */}
-            <div className="flex justify-center gap-4 mt-8">
+            <div className="flex gap-4 mt-8 max-w-2xl mx-auto">
               <button
                 onClick={generateImage}
                 disabled={generatingImage}
-                className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 disabled:bg-green-400 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2"
+                className="flex-1 border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 disabled:bg-green-400 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2"
               >
                 {generatingImage ? (
                   <>
@@ -593,21 +607,36 @@ export default function TwitterScraper() {
                   </>
                 ) : (
                   <>
-                    Generate Image
+                    Downoad Image
                   </>
                 )}
               </button>
               
               <button
                 onClick={() => {
-                  const tweetText = `Check out my political compass results!`;
+                  const tweetText = `Check out my political compass results lol`;
                   const url = `${window.location.origin}${window.location.pathname}?username=${encodeURIComponent(tweets[0].user.username)}`;
                   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`;
                   window.open(twitterUrl, '_blank');
                 }}
-                className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2"
+                className="flex-1 border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2"
               >
                 Share on X
+              </button>
+              
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}${window.location.pathname}?username=${encodeURIComponent(tweets[0].user.username)}`;
+                  navigator.clipboard.writeText(url).then(() => {
+                    // Optional: You could add a toast notification here
+                    console.log('Link copied to clipboard!');
+                  }).catch(err => {
+                    console.error('Failed to copy link:', err);
+                  });
+                }}
+                className="flex-1 border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2"
+              >
+                Copy Link
               </button>
             </div>
           </div>

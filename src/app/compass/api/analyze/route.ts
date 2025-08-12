@@ -47,6 +47,9 @@ Analyze the following tweets and determine the author's political leanings on tw
    - Negative scores = Left (progressive, pro-regulation, pro-welfare)
    - Positive scores = Right (conservative, free-market, traditional values)
 
+- Be aggressive with the scores on the Authoritarian/Libertarian axis and the Left/Right economic axis; do not always give numbers of small magnitude, and do not be afraid to give scores close to 10 or -10.
+- Do not simply give people who post about technology low scores leaning toward Libertarian and Right; instead, try to pick up subtle hints of their political leanings.
+
 Also provide:
 - A political label that best fits and is highly specific and nuanced.
 For the political label, be highly specific and nuanced. Instead of generic terms like "Liberal" or "Conservative", use detailed ideological descriptors that capture the person's specific blend of beliefs. Consider these examples:
