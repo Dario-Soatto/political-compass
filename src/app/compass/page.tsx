@@ -9,8 +9,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const params = await searchParams;
   const username = params?.username;
   
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  
   if (username) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Existing logic for specific user
     const ogImageUrl = `${baseUrl}/compass/api/og-image?username=${encodeURIComponent(username)}`;
     const pageUrl = `${baseUrl}/compass?username=${encodeURIComponent(username)}`;
     
@@ -40,9 +42,33 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     };
   }
 
+  // Default metadata for base URL (no username)
+  const defaultOgImageUrl = `${baseUrl}/compass/api/og-image`; // No username parameter
+  const defaultPageUrl = `${baseUrl}/compass`;
+  
   return {
     title: 'Political Compass - Soatto.com',
     description: 'Analyze Twitter users political leanings based on their tweets using AI',
+    openGraph: {
+      title: 'Twitter Political Compass',
+      description: 'Analyze Twitter users political leanings based on their tweets using AI',
+      url: defaultPageUrl,
+      images: [
+        {
+          url: defaultOgImageUrl,
+          width: 1200,
+          height: 630,
+          alt: 'Twitter Political Compass - Analyze political leanings from tweets',
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Twitter Political Compass',
+      description: 'Analyze Twitter users political leanings based on their tweets using AI',
+      images: [defaultOgImageUrl],
+    },
   };
 }
 
