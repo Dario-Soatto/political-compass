@@ -415,7 +415,7 @@ export default function TwitterScraper() {
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-8 font-mono">Twitter Political Compass</h1>
         
-        {/* Mock Data Toggle */}
+        {/* Mock Data Toggle
         <div className="mb-6 p-4 bg-black border border-gray-200 rounded-lg">
           <h3 className="font-semibold mb-3">Testing Mode</h3>
           <div className="space-y-3">
@@ -454,7 +454,7 @@ export default function TwitterScraper() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
         
         <form onSubmit={handleSubmit} className="mb-8 space-y-4">
           <div>
@@ -493,7 +493,7 @@ export default function TwitterScraper() {
             disabled={loading || analyzing}
             className="border border-gray-200 rounded-lg p-4 flex gap-3 bg-black hover:bg-gray-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
-            {loading ? 'Scraping Tweets...' : analyzing ? 'Analyzing Politics...' : 'Analyze Political Leaning'}
+            {loading ? 'Scraping Tweets...' : analyzing ? 'Analyzing Politics...' : 'Analyze'}
           </button>
         </form>
 
