@@ -103,7 +103,7 @@ export default function TwitterScraper() {
         }));
       } else {
         // Step 1: Scrape tweets (original API call)
-        const scrapeResponse = await fetch('/api/scrape', {
+        const scrapeResponse = await fetch('/compass/api/scrape', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export default function TwitterScraper() {
 
       // Step 2: Analyze political leanings
       setAnalyzing(true);
-      const analysisResponse = await fetch('/api/analyze', {
+      const analysisResponse = await fetch('/compass/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
