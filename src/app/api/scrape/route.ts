@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       const clientIP = getClientIP(request);
       console.log(`Request from IP: ${clientIP}`);
       
-      if (isRateLimited(clientIP) && false) {
+      if (isRateLimited(clientIP)) {
         return NextResponse.json(
           { 
             error: 'Rate limit exceeded. You can only make one Twitter API request per minute. Use mock data for testing.',
