@@ -50,26 +50,90 @@ export async function GET(request: NextRequest) {
     const analysis = analysisResult.analysis;
     const tweet = scrapeResult.tweets[0];
 
-    // Absolute simplest structure - single div with all text
+    // Updated text with Political Analysis Results header
+    const displayText = `Political Analysis Results
+
+@${tweet.user.username}
+
+${analysis.political_label}
+
+Confidence: ${Math.round(analysis.confidence_score * 100)}%`;
+
+    // Calculate position for profile picture (same logic as TwitterScraper.tsx)
+    const compassSize = 450;
+    const userSize = 40;
+    const userX = 50 + (analysis.left_right_score * 4); // percentage from left
+    const userY = 50 - (analysis.authoritarian_libertarian_score * 4); // percentage from top
+
     return new ImageResponse(
       (
         <div style={{ 
           width: '100%', 
           height: '100%', 
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           backgroundColor: '#0a0a0a', 
           color: '#ffffff',
-          fontSize: '24px',
-          fontFamily: 'system-ui',
-          textAlign: 'center',
-          padding: '40px'
+          fontFamily: 'system-ui'
         }}>
-          @{tweet.user.username} • {analysis.political_label} • Auth/Lib: {analysis.authoritarian_libertarian_score} • L/R: {analysis.left_right_score} • Confidence: {Math.round(analysis.confidence_score * 100)}%
+          {/* Left side - Political Compass with Profile Picture */}
+          <div style={{ 
+            width: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative'
+          }}>
+            {/* Compass Background */}
+            <img 
+              src="https://miro.medium.com/v2/resize:fit:1400/1*IQ5JRVrwKfplrBHOYvEKdg.png"
+              width={compassSize}
+              height={compassSize}
+              style={{
+                borderRadius: '8px',
+                imageRendering: 'crisp-edges'
+              }}
+            />
+            
+            {/* Profile Picture positioned on compass */}
+            {tweet.user.profile_image_url && (
+              <img
+                src={tweet.user.profile_image_url}
+                width={userSize}
+                height={userSize}
+                style={{
+                  position: 'absolute',
+                  left: `${userX}%`,
+                  top: `${userY}%`,
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  border: '3px solid #ffffff'
+                }}
+              />
+            )}
+          </div>
+
+          {/* Right side - Text */}
+          <div style={{ 
+            width: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            fontSize: '32px',
+            textAlign: 'left',
+            padding: '40px',
+            whiteSpace: 'pre-line',
+            lineHeight: '1.4',
+            fontWeight: 'bold'
+          }}>
+            {displayText}
+          </div>
         </div>
       ),
-      { width: 1200, height: 630 }
+      {
+        width: 1200,
+        height: 630,
+        debug: false
+      }
     );
 
   } catch (error) {
