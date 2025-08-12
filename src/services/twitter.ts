@@ -57,16 +57,7 @@ interface RapidApiTweet {
   };
 }
 
-interface RapidApiTweetsResponse {
-  result: {
-    timeline: {
-      instructions: Array<{
-        entries: RapidApiTweet[];
-      }>;
-    };
-  };
-}
-
+// Add cursor interface for pagination
 interface RapidApiCursor {
   entryId: string;
   content: {
@@ -76,6 +67,7 @@ interface RapidApiCursor {
   };
 }
 
+// Update the tweets response interface to include cursors
 interface RapidApiTweetsResponse {
   result: {
     timeline: {
@@ -90,8 +82,11 @@ interface RapidApiError extends Error {
   code?: number;
 }
 
+// Union type for all possible API responses
+type RapidApiResponse = RapidApiUserResponse | RapidApiTweetsResponse;
+
 // Helper function to make RapidAPI requests
-async function rapidApiRequest(endpoint: string, apiKey: string): Promise<any> {
+async function rapidApiRequest(endpoint: string, apiKey: string): Promise<RapidApiResponse> {
   const response = await fetch(`${RAPIDAPI_BASE}${endpoint}`, {
     headers: {
       'x-rapidapi-host': 'twitter241.p.rapidapi.com',
@@ -127,10 +122,10 @@ export async function scrapeUserTweets(username: string, limit: number = 50): Pr
     const cleanUsername = username.replace('@', '');
     
     // First, get the user by username to get their user ID
-    const userResponse: RapidApiUserResponse = await rapidApiRequest(
+    const userResponse = await rapidApiRequest(
       `/user?username=${cleanUsername}`,
       apiKey
-    );
+    ) as RapidApiUserResponse;
 
     if (!userResponse?.result?.data?.user?.result) {
       return {
@@ -160,7 +155,7 @@ export async function scrapeUserTweets(username: string, limit: number = 50): Pr
         endpoint += `&cursor=${encodeURIComponent(cursor)}`;
       }
 
-      const tweetsResponse: RapidApiTweetsResponse = await rapidApiRequest(endpoint, apiKey);
+      const tweetsResponse = await rapidApiRequest(endpoint, apiKey) as RapidApiTweetsResponse;
 
       let foundTweets = 0;
       let nextCursor: string | null = null;
