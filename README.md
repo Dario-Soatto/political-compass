@@ -13,7 +13,7 @@ A modern web application that analyzes Twitter users' political leanings based o
 
 ## 🚀 Live Demo
 
-Visit [compass.soatto.com](https://compass.soatto.com) to try it out!
+Visit [compass.soatto.com](https://www.compass.soatto.com) to try it out!
 
 ## 🛠️ Tech Stack
 
