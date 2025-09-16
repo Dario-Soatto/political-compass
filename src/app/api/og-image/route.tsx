@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     console.log(`[OG Image API] Generating for username: ${username}`);
 
     // Call the existing scrape API
-    const scrapeResponse = await fetch(`${request.nextUrl.origin}/compass/api/scrape`, {
+    const scrapeResponse = await fetch(`${request.nextUrl.origin}/api/scrape`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, limit: 20, useMockData: false }),
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Call the existing analyze API
-    const analyzeResponse = await fetch(`${request.nextUrl.origin}/compass/api/analyze`, {
+    const analyzeResponse = await fetch(`${request.nextUrl.origin}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tweets: scrapeResult.tweets }),

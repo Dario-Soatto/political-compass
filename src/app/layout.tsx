@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Soatto.com',
-  description: 'Soatto family website',
+  title: 'Political Compass - Soatto.com',
+  description: 'Analyze Twitter users political leanings based on their tweets using AI',
 };
 
 export default function RootLayout({

@@ -11,8 +11,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   
   if (username) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const ogImageUrl = `${baseUrl}/compass/api/og-image?username=${encodeURIComponent(username)}`;
-    const pageUrl = `${baseUrl}/compass?username=${encodeURIComponent(username)}`;
+    const ogImageUrl = `${baseUrl}/api/og-image?username=${encodeURIComponent(username)}`;
+    const pageUrl = `${baseUrl}?username=${encodeURIComponent(username)}`;
     
     return {
       title: `${username}'s Political Compass - Soatto.com`,
