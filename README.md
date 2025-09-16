@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Political Compass
 
-## Getting Started
+A modern web application that analyzes Twitter users' political leanings based on their tweets using AI. Built with Next.js and powered by Google's Gemini AI.
 
-First, run the development server:
+## 🌟 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Twitter Analysis**: Scrape and analyze any Twitter user's recent tweets
+- **AI-Powered Insights**: Uses Google Gemini AI to determine political positioning
+- **Political Compass Visualization**: Interactive compass showing economic and social positions
+- **Social Sharing**: Auto-generated OG images for sharing results
+- **Mock Data**: Built-in test data for development and demonstrations
+- **Responsive Design**: Works seamlessly on desktop and mobile
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Live Demo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Visit [compass.soatto.com](https://compass.soatto.com) to try it out!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **AI**: [Google Gemini AI](https://ai.google.dev/)
+- **Twitter API**: [twitter-api-v2](https://github.com/PLhery/node-twitter-api-v2)
+- **OG Images**: [@vercel/og](https://vercel.com/docs/functions/edge-functions/og-image-generation)
+- **Deployment**: [Vercel](https://vercel.com/)
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/political-compass.git
+   cd political-compass
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+3. **Set up environment variables**
+   
+   Create a `.env.local` file in the root directory:
+   ```env
+   # Required: Google Gemini AI API Key
+   GEMINI_API_KEY=your_gemini_api_key_here
+   
+   # Required: Twitter API v2 Bearer Token
+   TWITTER_BEARER_TOKEN=your_twitter_bearer_token_here
+   
+   # Optional: Base URL for production (used for OG images)
+   NEXT_PUBLIC_BASE_URL=https://your-domain.com
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Open your browser**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 🔑 API Keys Setup
+
+### Google Gemini AI
+1. Go to [Google AI Studio](https://aistudio.google.com/)
+2. Create a new API key
+3. Add it to your `.env.local` as `GEMINI_API_KEY`
+
+### Twitter API
+1. Apply for Twitter API access at [developer.twitter.com](https://developer.twitter.com/)
+2. Create a new app and get your Bearer Token
+3. Add it to your `.env.local` as `TWITTER_BEARER_TOKEN`
+
+## 🏗️ Project Structure
